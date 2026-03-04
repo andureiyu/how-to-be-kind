@@ -1,0 +1,6 @@
+# Linguist overrides
+*.ts linguist-detectable=true
+*.tsx linguist-detectable=true
+*.css linguist-detectable=false
+*.js linguist-detectable=false
+*.mjs linguist-detectable=false
