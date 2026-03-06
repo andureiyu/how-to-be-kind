@@ -182,7 +182,7 @@ export default function ProceedPage() {
       <AnimatePresence>
         {showNotif && (
           <motion.a
-            href="/hugs"
+            href="/board"
             className="fixed bottom-8 right-6 z-30 flex cursor-pointer items-center gap-2.5 rounded-full border-none px-5 py-3 shadow-lg sm:bottom-10 sm:right-8"
             style={{
               background: "linear-gradient(135deg, #e8f0cc, #d8e4b0)",
