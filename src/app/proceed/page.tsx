@@ -9,20 +9,27 @@ const sections: {
   sub?: string;
   accent?: boolean;
   pause?: boolean;
+  size?: "small" | "medium" | "large" | "hero";
+  beCivil?: boolean;
+  closing?: boolean;
 }[] = [
   {
-    text: "Hey.",
+    text: "Hi.",
     sub: "Take a breath.",
+    size: "hero",
   },
   {
-    text: "You opened this,",
-    sub: "and that already says something about you.",
+    text: "Since you've opened this,",
+    sub: "that already says something about you.",
+    size: "medium",
   },
   {
     text: "Maybe today was heavy.",
+    size: "large",
   },
   {
-    text: "Maybe it's been heavy for a while.",
+    text: "Maybe it's been heavy for weeks and even months.",
+    size: "small",
   },
   {
     pause: true,
@@ -30,33 +37,40 @@ const sections: {
   },
   {
     text: "You don't have to explain anything here.",
+    size: "medium",
   },
   {
     text: "There's no form to fill out.",
-    sub: "No problem to solve.",
+    sub: "And no problem to solve.",
+    size: "small",
   },
   {
-    text: "Just a quiet place",
-    sub: "for you to exist for a moment.",
+    text: "Just a quiet frontend website",
+    sub: "to show care",
+    size: "small",
   },
   {
     pause: true,
     text: "· · ·",
   },
   {
-    text: "It's okay to feel lost sometimes.",
+    text: "You know, I've sensed a bit of tension believe me",
+    size: "small",
   },
   {
-    text: "It's okay to not be okay.",
+    text: "I want you to know that it's alright to feel that way.",
+    size: "medium",
   },
   {
     text: "The fact that you're still here",
     sub: "— still trying —",
     accent: true,
+    size: "large",
   },
   {
-    text: "that is enough.",
+    text: "that is more than enough.",
     accent: true,
+    size: "hero",
   },
   {
     pause: true,
@@ -64,13 +78,16 @@ const sections: {
   },
   {
     text: "You are not your worst day.",
+    size: "medium",
   },
   {
     text: "You are not the mistakes you replay at 3 AM.",
+    size: "small",
   },
   {
     text: "You are someone worth being gentle with.",
     accent: true,
+    size: "large",
   },
   {
     pause: true,
@@ -78,13 +95,17 @@ const sections: {
   },
   {
     text: "So take your time here.",
+    size: "medium",
   },
   {
-    text: "Breathe slowly.",
-    sub: "Let your shoulders drop.",
+    text: "Be Civil",
+    sub: "Let yourself be civil, even if it's just for this.",
+    beCivil: true,
+    size: "hero",
   },
   {
     text: "You're safe in this small corner of the internet.",
+    size: "small",
   },
   {
     pause: true,
@@ -93,22 +114,35 @@ const sections: {
   {
     text: "And when you're ready,",
     sub: "you can close this tab.",
+    size: "small",
   },
   {
     text: "Or stay a little longer.",
+    size: "medium",
   },
   {
     text: "Either way,",
+    size: "small",
   },
   {
-    text: "I'm glad you're here.",
+    text: "I'm really glad that you're here.",
     accent: true,
+    closing: true,
+    size: "hero",
   },
   {
     pause: true,
     text: "🕊",
   },
 ];
+
+/* ─── size scale map ─── */
+const sizeMap = {
+  small:  { min: "0.9rem",  mid: "2.8vw", max: "1.4rem"  },
+  medium: { min: "1.05rem", mid: "3.2vw", max: "1.75rem" },
+  large:  { min: "1.2rem",  mid: "3.8vw", max: "2.1rem"  },
+  hero:   { min: "1.5rem",  mid: "4.8vw", max: "2.8rem"  },
+};
 
 /* ─── page ─── */
 export default function ProceedPage() {
@@ -263,12 +297,101 @@ function NarrativeBlock({
             fontSize: "clamp(1rem, 2.5vw, 1.4rem)",
             letterSpacing: "0.35em",
           }}
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85 }}
+          transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
         >
           {section.text}
         </motion.span>
+      </div>
+    );
+  }
+
+  const scale = section.size ?? "medium";
+  const { min, mid, max } = sizeMap[scale];
+  const fontSize = `clamp(${min}, ${mid}, ${max})`;
+
+  /* ── "Be Civil" special block ── */
+  if (section.beCivil) {
+    return (
+      <div
+        ref={ref}
+        className="flex flex-col items-center text-center"
+        style={{ paddingTop: "3rem", paddingBottom: "4.5rem" }}
+      >
+        <BeCivilWord isInView={isInView} />
+        {section.sub && (
+          <motion.p
+            className="mt-8"
+            style={{
+              color: "#b8a060",
+              fontSize: "clamp(0.8rem, 2.5vw, 1.1rem)",
+              fontFamily: "var(--font-bakso), cursive",
+              letterSpacing: "0.03em",
+              lineHeight: 1.6,
+            }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+            transition={{
+              duration: 1.2,
+              ease: [0.16, 1, 0.3, 1],
+              delay: 0.7,
+            }}
+          >
+            {section.sub}
+          </motion.p>
+        )}
+      </div>
+    );
+  }
+
+  /* ── closing "I'm really glad that you're here." ── */
+  if (section.closing) {
+    return (
+      <div
+        ref={ref}
+        className="flex flex-col items-center py-14 text-center sm:py-20"
+      >
+        <motion.p
+          style={{
+            color: "#6b8e3a",
+            fontSize: fontSize,
+            fontFamily: "var(--font-bakso), cursive",
+            fontStyle: "italic",
+            lineHeight: 1.5,
+            letterSpacing: "0.01em",
+          }}
+          initial={{ opacity: 0, y: 30, scale: 0.94 }}
+          animate={
+            isInView
+              ? { opacity: 1, y: 0, scale: 1 }
+              : { opacity: 0, y: 30, scale: 0.94 }
+          }
+          transition={{
+            duration: 1.6,
+            ease: [0.16, 1, 0.3, 1],
+            delay: 0.1,
+          }}
+        >
+          {section.text}
+        </motion.p>
+        {/* Soft glow underline */}
+        <motion.div
+          style={{
+            marginTop: "0.6rem",
+            height: "2px",
+            borderRadius: "999px",
+            background: "linear-gradient(90deg, transparent, #a8c46a, transparent)",
+          }}
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={
+            isInView
+              ? { scaleX: 1, opacity: 0.7 }
+              : { scaleX: 0, opacity: 0 }
+          }
+          transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
+          className="w-48 sm:w-64"
+        />
       </div>
     );
   }
@@ -281,19 +404,21 @@ function NarrativeBlock({
       <motion.p
         style={{
           color: section.accent ? "#6b8e3a" : "#9e823c",
-          fontSize: section.accent
-            ? "clamp(1.15rem, 3.8vw, 2rem)"
-            : "clamp(1.05rem, 3.5vw, 1.75rem)",
+          fontSize: fontSize,
           fontFamily: "var(--font-bakso), cursive",
           fontStyle: section.accent ? "italic" : "normal",
           lineHeight: 1.5,
         }}
-        initial={{ opacity: 0, y: 24 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 28, filter: "blur(4px)" }}
+        animate={
+          isInView
+            ? { opacity: 1, y: 0, filter: "blur(0px)" }
+            : { opacity: 0, y: 28, filter: "blur(4px)" }
+        }
         transition={{
-          duration: 1,
-          ease: "easeOut",
-          delay: index * 0.02,
+          duration: 1.1,
+          ease: [0.16, 1, 0.3, 1],
+          delay: index * 0.015,
         }}
       >
         {section.text}
@@ -309,17 +434,126 @@ function NarrativeBlock({
             letterSpacing: "0.03em",
             lineHeight: 1.6,
           }}
-          initial={{ opacity: 0, y: 16 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 14, filter: "blur(3px)" }}
+          animate={
+            isInView
+              ? { opacity: 1, y: 0, filter: "blur(0px)" }
+              : { opacity: 0, y: 14, filter: "blur(3px)" }
+          }
           transition={{
-            duration: 1,
-            ease: "easeOut",
-            delay: 0.3 + index * 0.02,
+            duration: 1.1,
+            ease: [0.16, 1, 0.3, 1],
+            delay: 0.28 + index * 0.015,
           }}
         >
           {section.sub}
         </motion.p>
       )}
     </div>
+  );
+}
+
+/* ─── "Be Civil" with hand-drawn brush stroke underline ─── */
+function BeCivilWord({ isInView }: { isInView: boolean }) {
+  /* total approximate length of the brush stroke path */
+  const strokeLen = 220;
+
+  return (
+    <motion.span
+      className="relative inline-flex flex-col items-center"
+      style={{
+        color: "#6b8e3a",
+        fontSize: "clamp(1.8rem, 5.5vw, 3.4rem)",
+        fontFamily: "var(--font-bakso), cursive",
+        fontStyle: "italic",
+        lineHeight: 1.3,
+        letterSpacing: "0.02em",
+        paddingBottom: "1.1em",
+      }}
+      initial={{ opacity: 0, y: 32, scale: 0.92, filter: "blur(6px)" }}
+      animate={
+        isInView
+          ? { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }
+          : { opacity: 0, y: 32, scale: 0.92, filter: "blur(6px)" }
+      }
+      transition={{ duration: 1.3, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <span className="relative inline-block">
+      Be Civil
+
+      {/* Hand-drawn brush stroke underline — two passes for depth */}
+      <svg
+        aria-hidden="true"
+        className="absolute pointer-events-none"
+        style={{
+          bottom: "-0.45em",
+          left: "-6%",
+          width: "112%",
+          height: "0.7em",
+          overflow: "hidden",
+        }}
+        viewBox="0 0 220 18"
+        preserveAspectRatio="none"
+        fill="none"
+      >
+        <defs>
+          <linearGradient id="brushGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stopColor="#c66251" stopOpacity="0.85" />
+            <stop offset="40%"  stopColor="#c4943d" stopOpacity="0.9"  />
+            <stop offset="75%"  stopColor="#7aa03e" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#779da5" stopOpacity="0.7"  />
+          </linearGradient>
+          <linearGradient id="brushGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stopColor="#c4943d" stopOpacity="0.5" />
+            <stop offset="50%"  stopColor="#6b8e3a" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#c66251" stopOpacity="0.4" />
+          </linearGradient>
+        </defs>
+
+        {/* Primary brush stroke — thick, slightly wobbly */}
+        <path
+          d="M4 10 C18 6, 40 13, 65 9 C90 5, 115 12, 140 8 C165 4, 188 11, 216 8"
+          stroke="url(#brushGrad)"
+          strokeWidth="4.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{
+            strokeDasharray: strokeLen,
+            strokeDashoffset: isInView ? 0 : strokeLen,
+            transition: `stroke-dashoffset 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.45s`,
+            opacity: isInView ? 1 : 0,
+          }}
+        />
+
+        {/* Second pass — thinner, offset slightly for hand-drawn texture */}
+        <path
+          d="M6 13 C22 9, 44 15, 68 11 C93 7, 118 14, 143 10 C167 6, 190 13, 214 11"
+          stroke="url(#brushGrad2)"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          style={{
+            strokeDasharray: strokeLen,
+            strokeDashoffset: isInView ? 0 : strokeLen,
+            transition: `stroke-dashoffset 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.6s`,
+            opacity: isInView ? 0.65 : 0,
+          }}
+        />
+
+        {/* Tiny accent flick at the end — like a real brush lift */}
+        <path
+          d="M210 8 C213 5, 217 4, 218 6"
+          stroke="url(#brushGrad)"
+          strokeWidth="2"
+          strokeLinecap="round"
+          style={{
+            strokeDasharray: 12,
+            strokeDashoffset: isInView ? 0 : 12,
+            transition: `stroke-dashoffset 0.5s cubic-bezier(0.16, 1, 0.3, 1) 1.4s`,
+            opacity: isInView ? 0.7 : 0,
+          }}
+        />
+      </svg>
+      </span>
+    </motion.span>
   );
 }

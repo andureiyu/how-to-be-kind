@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiAtSymbol } from "react-icons/hi";
+import LoadingScreen from "./components/LoadingScreen";
 
 const words = [
   { abbr: "I", rest: "f" },
@@ -15,8 +16,12 @@ const words = [
 
 export default function Home() {
   const [isRevealed, setIsRevealed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const handleDone = useCallback(() => setLoaded(true), []);
 
   return (
+    <>
+      {!loaded && <LoadingScreen onDone={handleDone} />}
     <div
       className="relative flex min-h-screen items-center justify-center overflow-hidden"
       style={{
@@ -26,12 +31,7 @@ export default function Home() {
     >
       <NavMenu />
 
-      <motion.div
-        className="flex flex-col items-center justify-center gap-5 px-6 py-8"
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, delay: 0.3, ease: "easeOut" }}
-      >
+      <div className="flex flex-col items-center justify-center gap-5 px-6 py-8">
         {/* Abbreviation / Expanding text */}
         <div
           className="cursor-pointer select-none"
@@ -54,6 +54,7 @@ export default function Home() {
                 total={words.length}
                 special={word.special}
                 isRevealed={isRevealed}
+                mountIndex={i}
               />
             ))}
           </div>
@@ -63,6 +64,7 @@ export default function Home() {
         <motion.p
           animate={{ opacity: isRevealed ? 0 : 0.45 }}
           transition={{ duration: 0.35 }}
+          initial={{ opacity: 0, y: 10, scale: 0.9 }}
           style={{
             color: "#b8a060",
             fontSize: "clamp(0.58rem, 1.3vw, 0.72rem)",
@@ -80,14 +82,19 @@ export default function Home() {
             fontSize: "clamp(0.6rem, 1.4vw, 0.76rem)",
             letterSpacing: "0.05em",
           }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.35 }}
-          transition={{ duration: 1.2, delay: 1 }}
+          initial={{ opacity: 0, y: 8, scale: 0.92 }}
+          animate={{ opacity: 0.35, y: 0, scale: 1 }}
+          transition={{
+            duration: 0.65,
+            delay: 0.1 + words.length * 0.14 + 0.3,
+            ease: [0.34, 1.56, 0.64, 1],
+          }}
         >
           ~ a gentle space for you guys ~
         </motion.p>
-      </motion.div>
+      </div>
     </div>
+    </>
   );
 }
 
@@ -107,6 +114,7 @@ function WordSlot({
   total,
   special,
   isRevealed,
+  mountIndex,
 }: {
   abbr: string;
   rest: string;
@@ -114,18 +122,34 @@ function WordSlot({
   total: number;
   special?: boolean;
   isRevealed: boolean;
+  mountIndex: number;
 }) {
   const expandDelay = index * 0.06;
   const collapseDelay = (total - 1 - index) * 0.035;
   const delay = isRevealed ? expandDelay : collapseDelay;
 
+  // Staggered spring pop-in on mount — matches loading screen feel
+  const mountDelay = 0.08 + mountIndex * 0.14;
+
   if (special) {
-    return <OpenWord isRevealed={isRevealed} delay={delay} />;
+    return (
+      <motion.span
+        initial={{ opacity: 0, y: 20, scale: 0.78 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, delay: mountDelay, ease: [0.34, 1.56, 0.64, 1] }}
+        style={{ display: "inline-flex" }}
+      >
+        <OpenWord isRevealed={isRevealed} delay={delay} />
+      </motion.span>
+    );
   }
 
   return (
-    <span
+    <motion.span
       className="relative inline-flex items-center"
+      initial={{ opacity: 0, y: 20, scale: 0.78 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.6, delay: mountDelay, ease: [0.34, 1.56, 0.64, 1] }}
       style={{
         fontSize: "clamp(1.6rem, 4.5vw, 3.2rem)",
         fontFamily: "var(--font-bakso), cursive",
@@ -156,7 +180,7 @@ function WordSlot({
           display: "inline-block",
         }}
       />
-    </span>
+    </motion.span>
   );
 }
 
