@@ -30,7 +30,7 @@ const HIGHLIGHT = "#fce4d6";
 function HandILY() {
   return (
     <motion.img
-      src="/assets/images/asl.png"
+      src="/assets/images/howaboutthis.png"
       alt="I Love You hand sign"
       style={{
         width: "100%",
