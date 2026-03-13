@@ -152,6 +152,7 @@ function LoaderContent() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 0.6, y: 0 }}
         transition={{ duration: 0.7, delay: 1.5, ease: "easeOut" }}
+        className="text-center"
         style={{
           color: "#9e823c",
           fontSize: "clamp(0.75rem, 1.8vw, 0.95rem)",

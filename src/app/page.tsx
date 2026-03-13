@@ -12,7 +12,7 @@ const words = [
   { abbr: "F", rest: "eel" },
   { abbr: "U", rest: "ncomfy," },
   { abbr: "P", rest: "lease" },
-  { abbr: "O", rest: "pen", special: true },
+  { abbr: "O", rest: "pen" },
 ];
 
 export default function Home() {
@@ -38,14 +38,16 @@ export default function Home() {
             className="cursor-pointer select-none w-full flex justify-center"
             onMouseEnter={() => setIsRevealed(true)}
             onMouseLeave={() => setIsRevealed(false)}
-            onClick={() => setIsRevealed((prev) => !prev)}
+            onClick={() => (window.location.href = "/proceed")}
           >
             <div
               className="flex flex-wrap items-center justify-center"
               style={{
                 gap: "0 clamp(0.2rem, 1.5vw, 0.4rem)",
-                width: "fit-content",
+                width: "100%",
                 maxWidth: "90vw",
+                margin: "0 auto",
+                textAlign: "center",
               }}
             >
               {words.map((word, i) => (
@@ -55,7 +57,6 @@ export default function Home() {
                   rest={word.rest}
                   index={i}
                   total={words.length}
-                  special={word.special}
                   isRevealed={isRevealed}
                   mountIndex={i}
                 />
@@ -103,19 +104,11 @@ export default function Home() {
 
 /* ──────────────────────────── Word Slot ──────────────────────────── */
 
-const openLetters = [
-  { char: "O", color: "#c66251" },
-  { char: "p", color: "#779da5" },
-  { char: "e", color: "#c4943d" },
-  { char: "n", color: "#d6a09c" },
-];
-
 function WordSlot({
   abbr,
   rest,
   index,
   total,
-  special,
   isRevealed,
   mountIndex,
 }: {
@@ -123,7 +116,6 @@ function WordSlot({
   rest: string;
   index: number;
   total: number;
-  special?: boolean;
   isRevealed: boolean;
   mountIndex: number;
 }) {
@@ -133,23 +125,6 @@ function WordSlot({
 
   // Staggered spring pop-in on mount — matches loading screen feel
   const mountDelay = 0.08 + mountIndex * 0.14;
-
-  if (special) {
-    return (
-      <motion.span
-        initial={{ opacity: 0, y: 20, scale: 0.78 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{
-          duration: 0.6,
-          delay: mountDelay,
-          ease: [0.34, 1.56, 0.64, 1],
-        }}
-        style={{ display: "inline-flex" }}
-      >
-        <OpenWord isRevealed={isRevealed} delay={delay} />
-      </motion.span>
-    );
-  }
 
   return (
     <motion.span
@@ -166,7 +141,6 @@ function WordSlot({
         fontFamily: "var(--font-bakso), cursive",
         lineHeight: 1.1,
         color: "#9e823c",
-        marginRight: index === 0 ? "clamp(0.15rem, 0.4vw, 0.3rem)" : 0,
       }}
     >
       <span style={{ display: "inline-block" }}>{abbr}</span>
@@ -192,132 +166,6 @@ function WordSlot({
         }}
       />
     </motion.span>
-  );
-}
-
-/* ──────────────────────────── "Open" — Soft Circle Embrace ──────────────────────────── */
-
-function OpenWord({
-  isRevealed,
-  delay,
-}: {
-  isRevealed: boolean;
-  delay: number;
-}) {
-  return (
-    <a
-      href="/proceed"
-      className="relative inline-flex items-center"
-      style={{
-        textDecoration: "none",
-        lineHeight: 1,
-        fontSize: "clamp(1.6rem, 4.5vw, 3.2rem)",
-        fontFamily: "var(--font-bakso), cursive",
-        marginLeft: "clamp(0.15rem, 0.4vw, 0.3rem)",
-      }}
-    >
-      {/* Elegant underline accent — draws from left to right */}
-      <svg
-        className="absolute pointer-events-none"
-        style={{
-          bottom: "-8px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "calc(100% + clamp(12px, 2vw, 20px))",
-          height: "clamp(8px, 1.5vw, 12px)",
-          overflow: "visible",
-        }}
-        viewBox="0 0 100 12"
-        preserveAspectRatio="none"
-        fill="none"
-      >
-        <defs>
-          <linearGradient id="underlineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#c66251" />
-            <stop offset="33%" stopColor="#779da5" />
-            <stop offset="66%" stopColor="#c4943d" />
-            <stop offset="100%" stopColor="#d6a09c" />
-          </linearGradient>
-        </defs>
-        {/* Smooth underline that animates in */}
-        <path
-          d="M2 8 Q25 4, 50 6 Q75 8, 98 8"
-          stroke="url(#underlineGrad)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{
-            opacity: isRevealed ? 0.7 : 0,
-            transitionProperty: "opacity",
-            transitionDuration: "0.5s",
-            transitionTimingFunction: "ease",
-            transitionDelay: `${delay + 0.3}s`,
-          }}
-        />
-      </svg>
-
-      {/* Letters container */}
-      <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          position: "relative",
-          zIndex: 1,
-          overflow: "visible",
-        }}
-      >
-        {openLetters.map((letter, i) => {
-          const isAbbr = i === 0;
-          const stagger = isRevealed
-            ? delay + i * 0.055
-            : (openLetters.length - 1 - i) * 0.04;
-
-          const letterSpan = (
-            <span
-              key={i}
-              className="open-letter"
-              style={{
-                color: letter.color,
-                opacity: isAbbr ? 1 : isRevealed ? 1 : 0,
-                transform: isAbbr
-                  ? "none"
-                  : isRevealed
-                    ? "translateY(0) scale(1)"
-                    : "translateY(3px) scale(0.85)",
-                transitionProperty: "opacity, transform",
-                transitionDuration: "0.4s",
-                transitionTimingFunction: "ease",
-                transitionDelay: `${stagger}s`,
-                display: "inline-block",
-                minWidth: "auto",
-              }}
-            >
-              {letter.char}
-            </span>
-          );
-
-          if (isAbbr) return letterSpan;
-
-          return (
-            <span
-              key={i}
-              style={{
-                display: "inline-block",
-                transitionProperty: "opacity, transform",
-                transitionDuration: "0.45s",
-                transitionTimingFunction: "cubic-bezier(0.25, 1, 0.5, 1)",
-                transitionDelay: `${stagger}s`,
-                opacity: isRevealed ? 1 : 0,
-                transform: isRevealed ? "scale(1)" : "scale(0.8)",
-                transformOrigin: "left center",
-              }}
-            >
-              {letterSpan}
-            </span>
-          );
-        })}
-      </span>
-    </a>
   );
 }
 
