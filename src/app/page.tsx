@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiAtSymbol } from "react-icons/hi";
 import LoadingScreen from "./components/LoadingScreen";
+import Link from "next/link";
 
 const words = [
   { abbr: "I", rest: "f" },
@@ -22,78 +23,80 @@ export default function Home() {
   return (
     <>
       {!loaded && <LoadingScreen onDone={handleDone} />}
-    <div
-      className="relative flex min-h-screen items-center justify-center overflow-hidden"
-      style={{
-        background: "#f8ffd8",
-        fontFamily: "var(--font-gamja), cursive",
-      }}
-    >
-      <NavMenu />
+      <div
+        className="relative flex min-h-screen items-center justify-center overflow-hidden"
+        style={{
+          background: "#f8ffd8",
+          fontFamily: "var(--font-gamja), cursive",
+        }}
+      >
+        <NavMenu />
 
-      <div className="flex flex-col items-center justify-center gap-5 px-6 py-8">
-        {/* Abbreviation / Expanding text */}
-        <div
-          className="cursor-pointer select-none"
-          onMouseEnter={() => setIsRevealed(true)}
-          onMouseLeave={() => setIsRevealed(false)}
-          onClick={() => setIsRevealed((prev) => !prev)}
-        >
+        <div className="flex flex-col items-center justify-center gap-5 px-4 sm:px-6 py-8 w-full">
+          {/* Abbreviation / Expanding text */}
           <div
-            className="flex flex-wrap items-center justify-center"
+            className="cursor-pointer select-none w-full flex justify-center"
+            onMouseEnter={() => setIsRevealed(true)}
+            onMouseLeave={() => setIsRevealed(false)}
+            onClick={() => setIsRevealed((prev) => !prev)}
+          >
+            <div
+              className="flex flex-wrap items-center justify-center"
+              style={{
+                gap: "0 clamp(0.2rem, 1.5vw, 0.4rem)",
+                width: "fit-content",
+                maxWidth: "90vw",
+              }}
+            >
+              {words.map((word, i) => (
+                <WordSlot
+                  key={i}
+                  abbr={word.abbr}
+                  rest={word.rest}
+                  index={i}
+                  total={words.length}
+                  special={word.special}
+                  isRevealed={isRevealed}
+                  mountIndex={i}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Hover hint */}
+          <motion.p
+            animate={{ opacity: isRevealed ? 0 : 0.45 }}
+            transition={{ duration: 0.35 }}
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
             style={{
-              gap: "0 clamp(0.25rem, 0.6vw, 0.4rem)",
+              color: "#b8a060",
+              fontSize: "clamp(0.58rem, 1.3vw, 0.72rem)",
+              letterSpacing: "0.12em",
+              fontFamily: "var(--font-bakso), cursive",
             }}
           >
-            {words.map((word, i) => (
-              <WordSlot
-                key={i}
-                abbr={word.abbr}
-                rest={word.rest}
-                index={i}
-                total={words.length}
-                special={word.special}
-                isRevealed={isRevealed}
-                mountIndex={i}
-              />
-            ))}
-          </div>
+            hover hover you may hover it, if yan gusto mo
+          </motion.p>
+
+          {/* Tagline */}
+          <motion.p
+            style={{
+              color: "#9e823c",
+              fontSize: "clamp(0.6rem, 1.4vw, 0.76rem)",
+              letterSpacing: "0.05em",
+            }}
+            initial={{ opacity: 0, y: 8, scale: 0.92 }}
+            animate={{ opacity: 0.35, y: 0, scale: 1 }}
+            transition={{
+              duration: 0.65,
+              delay: 0.1 + words.length * 0.14 + 0.3,
+              ease: [0.34, 1.56, 0.64, 1],
+            }}
+          >
+            ~ a gentle space for you guys ~
+          </motion.p>
         </div>
-
-        {/* Hover hint */}
-        <motion.p
-          animate={{ opacity: isRevealed ? 0 : 0.45 }}
-          transition={{ duration: 0.35 }}
-          initial={{ opacity: 0, y: 10, scale: 0.9 }}
-          style={{
-            color: "#b8a060",
-            fontSize: "clamp(0.58rem, 1.3vw, 0.72rem)",
-            letterSpacing: "0.12em",
-            fontFamily: "var(--font-bakso), cursive",
-          }}
-        >
-          you may hover, if gusto mo
-        </motion.p>
-
-        {/* Tagline */}
-        <motion.p
-          style={{
-            color: "#9e823c",
-            fontSize: "clamp(0.6rem, 1.4vw, 0.76rem)",
-            letterSpacing: "0.05em",
-          }}
-          initial={{ opacity: 0, y: 8, scale: 0.92 }}
-          animate={{ opacity: 0.35, y: 0, scale: 1 }}
-          transition={{
-            duration: 0.65,
-            delay: 0.1 + words.length * 0.14 + 0.3,
-            ease: [0.34, 1.56, 0.64, 1],
-          }}
-        >
-          ~ a gentle space for you guys ~
-        </motion.p>
       </div>
-    </div>
     </>
   );
 }
@@ -136,7 +139,11 @@ function WordSlot({
       <motion.span
         initial={{ opacity: 0, y: 20, scale: 0.78 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, delay: mountDelay, ease: [0.34, 1.56, 0.64, 1] }}
+        transition={{
+          duration: 0.6,
+          delay: mountDelay,
+          ease: [0.34, 1.56, 0.64, 1],
+        }}
         style={{ display: "inline-flex" }}
       >
         <OpenWord isRevealed={isRevealed} delay={delay} />
@@ -149,13 +156,17 @@ function WordSlot({
       className="relative inline-flex items-center"
       initial={{ opacity: 0, y: 20, scale: 0.78 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.6, delay: mountDelay, ease: [0.34, 1.56, 0.64, 1] }}
+      transition={{
+        duration: 0.6,
+        delay: mountDelay,
+        ease: [0.34, 1.56, 0.64, 1],
+      }}
       style={{
         fontSize: "clamp(1.6rem, 4.5vw, 3.2rem)",
         fontFamily: "var(--font-bakso), cursive",
         lineHeight: 1.1,
         color: "#9e823c",
-        marginLeft: "clamp(0.15rem, 0.4vw, 0.3rem)",
+        marginRight: index === 0 ? "clamp(0.15rem, 0.4vw, 0.3rem)" : 0,
       }}
     >
       <span style={{ display: "inline-block" }}>{abbr}</span>
@@ -193,127 +204,119 @@ function OpenWord({
   isRevealed: boolean;
   delay: number;
 }) {
-  // Total path length of the hand-drawn oval (measured from the SVG path)
-  const ovalLength = 240;
-
   return (
     <a
       href="/proceed"
       className="relative inline-flex items-center"
       style={{
         textDecoration: "none",
-        lineHeight: 1.1,
+        lineHeight: 1,
         fontSize: "clamp(1.6rem, 4.5vw, 3.2rem)",
         fontFamily: "var(--font-bakso), cursive",
         marginLeft: "clamp(0.15rem, 0.4vw, 0.3rem)",
       }}
     >
-      {/* Hand-drawn oval circle — wraps the entire word */}
+      {/* Elegant underline accent — draws from left to right */}
       <svg
         className="absolute pointer-events-none"
         style={{
-          top: "50%",
+          bottom: "-8px",
           left: "50%",
-          width: "calc(100% + clamp(20px, 3vw, 36px))",
-          height: "calc(100% + clamp(16px, 2.5vw, 28px))",
-          transform: "translate(-50%, -50%)",
+          transform: "translateX(-50%)",
+          width: "calc(100% + clamp(12px, 2vw, 20px))",
+          height: "clamp(8px, 1.5vw, 12px)",
           overflow: "visible",
         }}
-        viewBox="0 0 120 56"
+        viewBox="0 0 100 12"
         preserveAspectRatio="none"
         fill="none"
       >
         <defs>
-          <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="underlineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#c66251" />
             <stop offset="33%" stopColor="#779da5" />
             <stop offset="66%" stopColor="#c4943d" />
             <stop offset="100%" stopColor="#d6a09c" />
           </linearGradient>
         </defs>
-        {/* 
-          Imperfect hand-drawn ellipse path — intentionally wobbly.
-          Designed to feel like someone circled the word with a soft pencil.
-          The slight bumps and asymmetry give it character.
-        */}
+        {/* Smooth underline that animates in */}
         <path
-          d="M60 4 C82 2, 104 6, 112 14 C120 22, 118 34, 110 42 C102 50, 80 54, 60 53 C40 52, 16 50, 8 42 C0 34, 2 20, 10 12 C18 5, 38 3, 60 4 Z"
-          stroke="url(#circleGrad)"
-          strokeWidth="1.6"
+          d="M2 8 Q25 4, 50 6 Q75 8, 98 8"
+          stroke="url(#underlineGrad)"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
           style={{
-            strokeDasharray: ovalLength,
-            strokeDashoffset: isRevealed ? 0 : ovalLength,
-            opacity: isRevealed ? 0.55 : 0,
-            transition: [
-              `stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1) ${delay + 0.15}s`,
-              `opacity 0.35s ease ${delay + 0.1}s`,
-            ].join(", "),
-          }}
-        />
-        {/* Second pass — very faint, slightly offset for hand-drawn depth */}
-        <path
-          d="M58 5 C80 3, 105 7, 113 15 C119 23, 117 35, 109 43 C101 49, 79 53, 59 52 C39 51, 17 49, 9 41 C1 33, 3 21, 11 13 C19 6, 39 4, 58 5 Z"
-          stroke="url(#circleGrad)"
-          strokeWidth="0.8"
-          strokeLinecap="round"
-          style={{
-            strokeDasharray: ovalLength,
-            strokeDashoffset: isRevealed ? 0 : ovalLength,
-            opacity: isRevealed ? 0.2 : 0,
-            transition: [
-              `stroke-dashoffset 0.9s cubic-bezier(0.4, 0, 0.2, 1) ${delay + 0.25}s`,
-              `opacity 0.4s ease ${delay + 0.2}s`,
-            ].join(", "),
+            opacity: isRevealed ? 0.7 : 0,
+            transitionProperty: "opacity",
+            transitionDuration: "0.5s",
+            transitionTimingFunction: "ease",
+            transitionDelay: `${delay + 0.3}s`,
           }}
         />
       </svg>
 
-      {/* Letters */}
-      {openLetters.map((letter, i) => {
-        const isAbbr = i === 0;
-        const stagger = isRevealed
-          ? delay + i * 0.055
-          : (openLetters.length - 1 - i) * 0.04;
+      {/* Letters container */}
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          position: "relative",
+          zIndex: 1,
+          overflow: "visible",
+        }}
+      >
+        {openLetters.map((letter, i) => {
+          const isAbbr = i === 0;
+          const stagger = isRevealed
+            ? delay + i * 0.055
+            : (openLetters.length - 1 - i) * 0.04;
 
-        const letterSpan = (
-          <span
-            key={i}
-            className="open-letter"
-            style={{
-              color: letter.color,
-              opacity: isAbbr ? 1 : isRevealed ? 1 : 0,
-              transform: isAbbr
-                ? "none"
-                : isRevealed
-                  ? "translateY(0) scale(1)"
-                  : "translateY(3px) scale(0.85)",
-              transitionDelay: `${stagger}s`,
-            }}
-          >
-            {letter.char}
-          </span>
-        );
+          const letterSpan = (
+            <span
+              key={i}
+              className="open-letter"
+              style={{
+                color: letter.color,
+                opacity: isAbbr ? 1 : isRevealed ? 1 : 0,
+                transform: isAbbr
+                  ? "none"
+                  : isRevealed
+                    ? "translateY(0) scale(1)"
+                    : "translateY(3px) scale(0.85)",
+                transitionProperty: "opacity, transform",
+                transitionDuration: "0.4s",
+                transitionTimingFunction: "ease",
+                transitionDelay: `${stagger}s`,
+                display: "inline-block",
+                minWidth: "auto",
+              }}
+            >
+              {letter.char}
+            </span>
+          );
 
-        if (isAbbr) return letterSpan;
+          if (isAbbr) return letterSpan;
 
-        return (
-          <span
-            key={i}
-            style={{
-              display: "grid",
-              gridTemplateColumns: isRevealed ? "1fr" : "0fr",
-              transition: `grid-template-columns 0.45s cubic-bezier(0.25, 1, 0.5, 1) ${stagger}s`,
-              overflow: "hidden",
-            }}
-          >
-            <span style={{ minWidth: 0, overflow: "hidden" }}>
+          return (
+            <span
+              key={i}
+              style={{
+                display: "inline-block",
+                transitionProperty: "opacity, transform",
+                transitionDuration: "0.45s",
+                transitionTimingFunction: "cubic-bezier(0.25, 1, 0.5, 1)",
+                transitionDelay: `${stagger}s`,
+                opacity: isRevealed ? 1 : 0,
+                transform: isRevealed ? "scale(1)" : "scale(0.8)",
+                transformOrigin: "left center",
+              }}
+            >
               {letterSpan}
             </span>
-          </span>
-        );
-      })}
+          );
+        })}
+      </span>
     </a>
   );
 }
