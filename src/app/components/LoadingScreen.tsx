@@ -143,7 +143,7 @@ function LoaderContent() {
             textAlign: "center",
           }}
         >
-          guess what this means?
+          a friendly peaceful gesture here
         </motion.span>
       </motion.div>
 

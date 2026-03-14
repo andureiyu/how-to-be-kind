@@ -38,7 +38,7 @@ export default function Home() {
             className="cursor-pointer select-none w-full flex justify-center"
             onMouseEnter={() => setIsRevealed(true)}
             onMouseLeave={() => setIsRevealed(false)}
-            onClick={() => (window.location.href = "/proceed")}
+            onClick={() => (window.location.href = "/doors")}
           >
             <div
               className="flex flex-wrap items-center justify-center"
