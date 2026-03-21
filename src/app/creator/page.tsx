@@ -73,7 +73,7 @@ export default function CreatorPage() {
                 }}
               >
                 <Image
-                  src="/assets/images/update.jpg"
+                  src="/assets/images/sleepicon.jpg"
                   alt="Michael Andrei P. Ninora"
                   className="object-cover w-full h-full"
                   style={{ borderRadius: "1.5rem" }}
