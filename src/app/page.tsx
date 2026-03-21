@@ -4,7 +4,6 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiAtSymbol } from "react-icons/hi";
 import LoadingScreen from "./components/LoadingScreen";
-import Link from "next/link";
 
 const words = [
   { abbr: "I", rest: "f" },

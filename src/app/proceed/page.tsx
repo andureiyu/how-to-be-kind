@@ -36,7 +36,7 @@ size: "hero",
 
 {
 
-text: "Since you've opened this,",
+text: "Since you&apos;ve opened this,",
 
 sub: "that already says something about you.",
 
@@ -54,7 +54,7 @@ size: "large",
 
 {
 
-text: "Maybe it's been heavy for weeks and even months.",
+text: "Maybe it&apos;s been heavy for weeks and even months.",
 
 size: "small",
 
@@ -70,7 +70,7 @@ text: "· · ·",
 
 {
 
-text: "You don't have to explain anything here.",
+text: "You don&apos;t have to explain anything here.",
 
 size: "medium",
 
@@ -78,7 +78,7 @@ size: "medium",
 
 {
 
-text: "There's no form to fill out.",
+text: "There&apos;s no form to fill out.",
 
 sub: "And no problem to solve.",
 
@@ -106,7 +106,7 @@ text: "· · ·",
 
 {
 
-text: "You know, I've sensed a bit of tension believe me",
+text: "You know, I&apos;ve sensed a bit of tension believe me",
 
 size: "small",
 
@@ -114,7 +114,7 @@ size: "small",
 
 {
 
-text: "I want you to know that it's alright to feel that way.",
+text: "I want you to know that it&apos;s alright to feel that way.",
 
 size: "medium",
 
@@ -122,7 +122,7 @@ size: "medium",
 
 {
 
-text: "The fact that you're still here",
+text: "The fact that you&apos;re still here",
 
 sub: "— still trying —",
 
@@ -196,7 +196,7 @@ size: "medium",
 
 text: "Be Civil",
 
-sub: "Let yourself be civil, even if it's just for this.",
+sub: "Let yourself be civil, even if it&apos;s just for this.",
 
 beCivil: true,
 
@@ -206,7 +206,7 @@ size: "hero",
 
 {
 
-text: "You're safe in this small corner of the internet.",
+text: "You&apos;re safe in this small corner of the internet.",
 
 size: "small",
 
@@ -222,7 +222,7 @@ text: "· · ·",
 
 {
 
-text: "And when you're ready,",
+text: "And when you&apos;re ready,",
 
 sub: "you can close this tab.",
 
@@ -490,6 +490,7 @@ letterSpacing: "0.03em",
 
 >
 
+{/* eslint-disable-next-line react/no-unescaped-entities */}
 Don't forget this
 
 </span>

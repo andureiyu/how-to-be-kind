@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { HiHeart, HiSparkles, HiSun, HiMoon } from "react-icons/hi2";
+import Image from "next/image";
+// Unused imports: HiHeart, HiSparkles, HiSun, HiMoon from react-icons/hi2
 import { CiGlobe } from "react-icons/ci";
 
 // Journey steps
@@ -254,7 +255,7 @@ export default function AboutPage() {
                 <span style={{ color: "#a94442", fontWeight: 600 }}>
                   unease
                 </span>
-                . I've noticed that we humans act in certain situations and
+                . I&apos;ve noticed that we humans act in certain situations and
                 would sometimes feel really{" "}
                 <span style={{ color: "#a94442", fontWeight: 600 }}>
                   uncomfortable
@@ -276,7 +277,7 @@ export default function AboutPage() {
                   lineHeight: 1.8,
                 }}
               >
-                It's the reason why I am inspired to make this site that acts as
+                It&apos;s the reason why I am inspired to make this site that acts as
                 a safe space for anybody who feels{" "}
                 <span style={{ color: "#a94442", fontWeight: 600 }}>
                   uncomfortable
@@ -311,11 +312,13 @@ export default function AboutPage() {
                   boxShadow: "0 20px 60px rgba(158,130,60,0.25)",
                 }}
               >
-                <img
+                <Image
                   src="/assets/images/update.jpg"
                   alt="About update"
                   className="object-cover w-full h-full"
                   style={{ borderRadius: "1.5rem" }}
+                  width={280}
+                  height={280}
                 />
                 <div className="absolute inset-3 rounded-2xl border-2 border-dashed border-white/30" />
               </div>

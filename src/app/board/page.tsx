@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
+import Image from "next/image";
 
 /* --- GIF sources --- */
 const gifs = [
@@ -211,12 +212,12 @@ export default function BoardPage() {
                 }}
                 onClick={() => setSelected(gif)}
               >
-                <img
+                <Image
                   src={gif.src}
                   alt={gif.alt}
-                  className="h-full w-full rounded-2xl"
+                  fill
+                  className="rounded-2xl"
                   style={{ objectFit: "cover" }}
-                  draggable={false}
                 />
               </motion.div>
             );
@@ -256,12 +257,12 @@ export default function BoardPage() {
                 }}
                 onClick={() => setSelected(gif)}
               >
-                <img
+                <Image
                   src={gif.src}
                   alt={gif.alt}
-                  className="h-full w-full rounded-2xl"
+                  fill
+                  className="rounded-2xl"
                   style={{ objectFit: "cover" }}
-                  draggable={false}
                 />
               </motion.div>
             );
@@ -519,12 +520,11 @@ export default function BoardPage() {
                   maxHeight: "min(75vh,420px)",
                 }}
               >
-                <img
+                <Image
                   src={selected.src}
                   alt={selected.alt}
-                  className="block w-full h-full"
-                  style={{ objectFit: "contain", maxHeight: "min(75vh,420px)" }}
-                  draggable={false}
+                  fill
+                  style={{ objectFit: "contain" }}
                 />
               </div>
               <motion.p

@@ -16,13 +16,6 @@ import { motion, AnimatePresence } from "framer-motion";
    palm lines, finger joints, and realistic shadow work.
 ═══════════════════════════════════════════════════════════════════ */
 
-const SKIN = "#f2d5a8";
-const SHADOW = "#ddb87a";
-const DARK = "#c49a5a";
-const NAIL = "#fff5e8";
-const LINE = "#b8843a";
-const HIGHLIGHT = "#fce4d6";
-
 /* ── I LOVE YOU HAND SIGN ──────────────────────────────────────────
    Using a real ASL photo for authentic hand gesture.
    Perfect for a wholesome loading screen.
