@@ -64,7 +64,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
         <motion.div
           key="loader"
           className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
-          style={{ background: "#f8ffd8" }}
+          style={{ background: "#fff8f2" }}
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

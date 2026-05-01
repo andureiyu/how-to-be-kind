@@ -1,23 +1,65 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiAtSymbol } from "react-icons/hi";
 import LoadingScreen from "./components/LoadingScreen";
 
-const words = [
-  { abbr: "I", rest: "f" },
-  { abbr: "Y", rest: "ou" },
-  { abbr: "F", rest: "eel" },
-  { abbr: "U", rest: "ncomfy," },
-  { abbr: "P", rest: "lease" },
-  { abbr: "O", rest: "pen" },
+const phrases = [
+  { text: "How to be Kind", lang: "English" },
+  { text: "Paano Maging Mabait", lang: "Filipino" },
+  { text: "Comment être Gentil", lang: "Français" },
+  { text: "優しくなる方法", lang: "日本語" },
+  { text: "친절하게 되는 방법", lang: "한국어" },
+  { text: "Cómo ser Amable", lang: "Español" },
+  { text: "Wie man freundlich ist", lang: "Deutsch" },
 ];
 
+/* Character-stagger spring variants — inspired by GSAP SplitText + Framer Motion community */
+const sentenceVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.038, delayChildren: 0.05 } },
+  exit: { transition: { staggerChildren: 0.018, staggerDirection: -1 } },
+};
+
+const charVariants = {
+  hidden: { opacity: 0, y: 48, rotateX: -90, scale: 0.85 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    rotateX: 0,
+    scale: 1,
+    transition: { type: "spring", damping: 13, stiffness: 180 },
+  },
+  exit: {
+    opacity: 0,
+    y: -28,
+    scale: 0.88,
+    transition: { duration: 0.18, ease: "easeIn" },
+  },
+};
+
 export default function Home() {
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [phraseIndex, setPhraseIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
-  const handleDone = useCallback(() => setLoaded(true), []);
+  const [clapped, setClapped] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const router = useRouter();
+
+  // Start cycling exactly when the loading screen finishes — stable [] dep, no HMR size mismatch
+  const handleDone = useCallback(() => {
+    setLoaded(true);
+    intervalRef.current = setInterval(() => {
+      setPhraseIndex((i) => (i + 1) % phrases.length);
+    }, 3500);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current !== null) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   return (
     <>
@@ -25,146 +67,297 @@ export default function Home() {
       <div
         className="relative flex min-h-screen items-center justify-center overflow-hidden"
         style={{
-          background: "#f8ffd8",
+          background: "#fff8f2",
           fontFamily: "var(--font-gamja), cursive",
         }}
       >
+        <BackgroundTexture />
         <NavMenu />
 
-        <div className="flex flex-col items-center justify-center gap-5 px-4 sm:px-6 py-8 w-full">
-          {/* Abbreviation / Expanding text */}
+        <div className="relative z-10 flex flex-col items-center justify-center gap-5 px-4 sm:px-6 py-8 w-full">
+          {/* Cycling multilingual title — per-character stagger spring */}
           <div
-            className="cursor-pointer select-none w-full flex justify-center"
-            onMouseEnter={() => setIsRevealed(true)}
-            onMouseLeave={() => setIsRevealed(false)}
-            onClick={() => (window.location.href = "/doors")}
-          >
-            <div
-              className="flex flex-wrap items-center justify-center"
-              style={{
-                gap: "0 clamp(0.2rem, 1.5vw, 0.4rem)",
-                width: "100%",
-                maxWidth: "90vw",
-                margin: "0 auto",
-                textAlign: "center",
-              }}
-            >
-              {words.map((word, i) => (
-                <WordSlot
-                  key={i}
-                  abbr={word.abbr}
-                  rest={word.rest}
-                  index={i}
-                  total={words.length}
-                  isRevealed={isRevealed}
-                  mountIndex={i}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Hover hint */}
-          <motion.p
-            animate={{ opacity: isRevealed ? 0 : 0.45 }}
-            transition={{ duration: 0.35 }}
-            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            className="relative flex items-center justify-center"
             style={{
-              color: "#b8a060",
-              fontSize: "clamp(0.58rem, 1.3vw, 0.72rem)",
-              letterSpacing: "0.12em",
-              fontFamily: "var(--font-bakso), cursive",
+              minHeight: "clamp(4rem, 11vw, 7.5rem)",
+              width: "100%",
+              perspective: "600px",
             }}
           >
-            hover hover you may hover it, if yan gusto mo
-          </motion.p>
+            <AnimatePresence mode="wait">
+              <motion.h1
+                key={phraseIndex}
+                variants={sentenceVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  fontSize: "clamp(2rem, 6vw, 4.5rem)",
+                  fontFamily: "var(--font-bakso), cursive",
+                  color: "#9e6b3a",
+                  textAlign: "center",
+                  letterSpacing: "0.02em",
+                  lineHeight: 1.2,
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  gap: "0 0.28em",
+                }}
+              >
+                {phrases[phraseIndex].text.split(" ").map((word, wi) => (
+                  <span key={wi} style={{ display: "inline-flex", overflow: "hidden" }}>
+                    {word.split("").map((char, ci) => (
+                      <motion.span
+                        key={ci}
+                        variants={charVariants}
+                        style={{ display: "inline-block", transformOrigin: "bottom center" }}
+                      >
+                        {char}
+                      </motion.span>
+                    ))}
+                  </span>
+                ))}
+              </motion.h1>
+            </AnimatePresence>
+          </div>
+
+          {/* Language label */}
+          <div style={{ height: "1.4rem", overflow: "hidden" }}>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={`lang-${phraseIndex}`}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 0.4, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                style={{
+                  display: "block",
+                  color: "#b8865a",
+                  fontSize: "clamp(0.55rem, 1.2vw, 0.68rem)",
+                  letterSpacing: "0.22em",
+                  fontFamily: "var(--font-bakso), cursive",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                }}
+              >
+                {phrases[phraseIndex].lang}
+              </motion.span>
+            </AnimatePresence>
+          </div>
 
           {/* Tagline */}
           <motion.p
             style={{
-              color: "#9e823c",
+              color: "#9e6b3a",
               fontSize: "clamp(0.6rem, 1.4vw, 0.76rem)",
               letterSpacing: "0.05em",
+              textAlign: "center",
             }}
             initial={{ opacity: 0, y: 8, scale: 0.92 }}
             animate={{ opacity: 0.35, y: 0, scale: 1 }}
             transition={{
               duration: 0.65,
-              delay: 0.1 + words.length * 0.14 + 0.3,
+              delay: 0.8,
               ease: [0.34, 1.56, 0.64, 1],
             }}
           >
             ~ a gentle space for you guys ~
           </motion.p>
+
+          {/* CTA Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 1.2, ease: [0.34, 1.56, 0.64, 1] }}
+            style={{ marginTop: "clamp(1.2rem, 3vw, 2rem)" }}
+          >
+            <StartButton
+              onClick={() => {
+                if (clapped) return;
+                setClapped(true);
+                setTimeout(() => router.push("/proceed"), 380);
+              }}
+              pressed={clapped}
+            />
+          </motion.div>
         </div>
       </div>
     </>
   );
 }
 
-/* ──────────────────────────── Word Slot ──────────────────────────── */
+/* ───────────────────────────── Start Button ───────────────────────────── */
 
-function WordSlot({
-  abbr,
-  rest,
-  index,
-  total,
-  isRevealed,
-  mountIndex,
-}: {
-  abbr: string;
-  rest: string;
-  index: number;
-  total: number;
-  isRevealed: boolean;
-  mountIndex: number;
-}) {
-  const expandDelay = index * 0.06;
-  const collapseDelay = (total - 1 - index) * 0.035;
-  const delay = isRevealed ? expandDelay : collapseDelay;
-
-  // Staggered spring pop-in on mount — matches loading screen feel
-  const mountDelay = 0.08 + mountIndex * 0.14;
-
+function StartButton({ onClick, pressed }: { onClick: () => void; pressed: boolean }) {
   return (
-    <motion.span
-      className="relative inline-flex items-center"
-      initial={{ opacity: 0, y: 20, scale: 0.78 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{
-        duration: 0.6,
-        delay: mountDelay,
-        ease: [0.34, 1.56, 0.64, 1],
-      }}
+    <motion.button
+      onClick={onClick}
+      aria-label="Start"
       style={{
-        fontSize: "clamp(1.6rem, 4.5vw, 3.2rem)",
-        fontFamily: "var(--font-bakso), cursive",
-        lineHeight: 1.1,
-        color: "#9e823c",
+        position: "relative",
+        background: "none",
+        border: "none",
+        padding: 0,
+        cursor: pressed ? "default" : "pointer",
+        pointerEvents: pressed ? "none" : "auto",
+        outline: "none",
       }}
+      initial={false}
+      whileHover="hover"
+      whileTap="tap"
+      animate={pressed ? "tap" : "idle"}
     >
-      <span style={{ display: "inline-block" }}>{abbr}</span>
-
-      <span
-        className={`word-rest ${isRevealed ? "revealed" : ""}`}
-        style={{ transitionDelay: `${delay}s` }}
-      >
-        <span
-          className="word-rest-inner"
-          style={{ transitionDelay: `${delay}s` }}
-        >
-          {rest}
-        </span>
-      </span>
-
-      {/* Add a natural space after each word */}
-      <span
+      {/* Offset shadow layer */}
+      <motion.span
+        aria-hidden
+        variants={{
+          idle:  { x: 5, y: 5 },
+          hover: { x: 7, y: 7 },
+          tap:   { x: 2, y: 2 },
+        }}
+        transition={{ type: "spring", stiffness: 500, damping: 22 }}
         style={{
-          width: isRevealed ? "0.3em" : 0,
-          transition: "width 0.4s ease",
-          display: "inline-block",
+          position: "absolute",
+          inset: 0,
+          background: "#9e6b3a",
+          borderRadius: "3px",
+          display: "block",
         }}
       />
-    </motion.span>
+      {/* Main face */}
+      <motion.span
+        variants={{
+          idle:  { x: 0, y: 0 },
+          hover: { x: -2, y: -2 },
+          tap:   { x: 3, y: 3 },
+        }}
+        transition={{ type: "spring", stiffness: 500, damping: 22 }}
+        style={{
+          position: "relative",
+          display: "block",
+          padding: "clamp(0.55rem, 1.2vw, 0.75rem) clamp(1.8rem, 4vw, 2.8rem)",
+          background: "#fff8f2",
+          border: "2px solid #9e6b3a",
+          borderRadius: "3px",
+          color: "#9e6b3a",
+          fontSize: "clamp(0.7rem, 1.5vw, 0.88rem)",
+          fontFamily: "var(--font-bakso), cursive",
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
+          userSelect: "none",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {pressed ? "let’s go ✨" : "begin"}
+      </motion.span>
+    </motion.button>
+  );
+}
+
+/* ──────────────────────────── Background Texture ──────────────────────────── */
+
+function BackgroundTexture() {
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none overflow-hidden"
+      style={{ zIndex: 0 }}
+    >
+      {/* Fine grid + large grid with cross accents */}
+      <svg
+        width="100%"
+        height="100%"
+        xmlns="http://www.w3.org/2000/svg"
+        className="absolute inset-0"
+      >
+        <defs>
+          <pattern id="smallGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path
+              d="M 30 0 L 0 0 0 30"
+              fill="none"
+              stroke="rgba(175,125,80,0.065)"
+              strokeWidth="0.5"
+            />
+          </pattern>
+          <pattern id="largeGrid" width="150" height="150" patternUnits="userSpaceOnUse">
+            <rect width="150" height="150" fill="url(#smallGrid)" />
+            <path
+              d="M 150 0 L 0 0 0 150"
+              fill="none"
+              stroke="rgba(175,125,80,0.15)"
+              strokeWidth="0.8"
+            />
+            {/* Small cross at major grid intersections */}
+            <line x1="73" y1="75" x2="77" y2="75" stroke="rgba(175,125,80,0.3)" strokeWidth="0.7" />
+            <line x1="75" y1="73" x2="75" y2="77" stroke="rgba(175,125,80,0.3)" strokeWidth="0.7" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#largeGrid)" />
+      </svg>
+
+      {/* Abstract vector decor — top-left */}
+      <svg
+        className="absolute top-0 left-0"
+        width="300"
+        height="300"
+        viewBox="0 0 300 300"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ opacity: 0.075 }}
+      >
+        <path d="M -10 100 Q 55 35 120 100 Q 185 165 250 100" stroke="#9e6b3a" strokeWidth="1.5" />
+        <path d="M 35 0 L 35 160" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="4 10" />
+        <path d="M 0 55 L 200 55" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="4 10" />
+        <rect x="65" y="95" width="72" height="72" stroke="#9e6b3a" strokeWidth="1" strokeDasharray="6 10" transform="rotate(13 101 131)" />
+        <circle cx="10" cy="10" r="30" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="3 9" />
+      </svg>
+
+      {/* Abstract vector decor — bottom-right (mirrored) */}
+      <svg
+        className="absolute bottom-0 right-0"
+        width="300"
+        height="300"
+        viewBox="0 0 300 300"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ opacity: 0.075, transform: "rotate(180deg)" }}
+      >
+        <path d="M -10 100 Q 55 35 120 100 Q 185 165 250 100" stroke="#9e6b3a" strokeWidth="1.5" />
+        <path d="M 35 0 L 35 160" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="4 10" />
+        <path d="M 0 55 L 200 55" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="4 10" />
+        <rect x="65" y="95" width="72" height="72" stroke="#9e6b3a" strokeWidth="1" strokeDasharray="6 10" transform="rotate(13 101 131)" />
+        <circle cx="10" cy="10" r="30" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="3 9" />
+      </svg>
+
+      {/* Subtle arc — top-right */}
+      <svg
+        className="absolute top-0 right-0"
+        width="220"
+        height="220"
+        viewBox="0 0 220 220"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ opacity: 0.055 }}
+      >
+        <circle cx="200" cy="30" r="90" stroke="#9e6b3a" strokeWidth="1" strokeDasharray="3 13" />
+        <path d="M 120 0 L 220 100" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="5 9" />
+      </svg>
+
+      {/* Subtle arc — bottom-left */}
+      <svg
+        className="absolute bottom-0 left-0"
+        width="220"
+        height="220"
+        viewBox="0 0 220 220"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ opacity: 0.055 }}
+      >
+        <circle cx="20" cy="190" r="90" stroke="#9e6b3a" strokeWidth="1" strokeDasharray="3 13" />
+        <path d="M 0 120 L 100 220" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="5 9" />
+      </svg>
+    </div>
   );
 }
 
