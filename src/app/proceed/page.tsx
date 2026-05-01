@@ -302,7 +302,68 @@ text: "🕊",
 
 },
 
+{
+
+text: "And before you go,",
+
+size: "small",
+
+},
+
+{
+
+text: "there&apos;s a gentle map below.",
+
+sub: "four steps, whenever you&apos;re ready.",
+
+size: "medium",
+
+},
+
 ];
+
+/* ─── journey map ─── */
+
+const kindnessSteps = [
+  {
+    num: "01",
+    title: "Pause",
+    desc: "Before anything, breathe. One moment of stillness before you react.",
+    node: [70, 105] as [number, number],
+    side: "right" as const,
+    accent: "#c4943d",
+  },
+  {
+    num: "02",
+    title: "See",
+    desc: "Look beyond yourself. Try to sense what the other person might be carrying.",
+    node: [290, 200] as [number, number],
+    side: "left" as const,
+    accent: "#4a9078",
+  },
+  {
+    num: "03",
+    title: "Choose",
+    desc: "Kindness is always a decision. Even a soft word, offered gently, is enough.",
+    node: [70, 305] as [number, number],
+    side: "right" as const,
+    accent: "#a05060",
+  },
+  {
+    num: "04",
+    title: "Give",
+    desc: "Offer it freely, without keeping score. That is what makes it real.",
+    node: [290, 400] as [number, number],
+    side: "left" as const,
+    accent: "#6b8e3a",
+  },
+];
+
+const VBOX_W = 360;
+const VBOX_H = 500;
+const JOURNEY_D =
+  "M 180 20 C 180 55, 70 55, 70 105 C 70 155, 290 155, 290 200 C 290 255, 70 255, 70 305 C 70 355, 290 355, 290 400";
+const PATH_LEN = 900;
 
 /* ─── size scale map ─── */
 
@@ -443,6 +504,9 @@ whileHover={{ x: -3, transition: { duration: 0.2 } }}
 ))}
 
 </div>
+
+{/* Journey map — gentle visual guide after the narrative */}
+<JourneyMapSection />
 
 {/* Floating notification pop-up */}
 
@@ -1105,4 +1169,252 @@ opacity: isInView ? 0.7 : 0,
 
 );
 
+}
+
+/* ─── journey map section ─── */
+
+function JourneyMapSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-8% 0px -8% 0px" });
+
+  return (
+    <section
+      ref={ref}
+      className="relative mx-auto w-full max-w-xl px-4 sm:px-6 pt-4 pb-44"
+    >
+      {/* Header */}
+      <motion.div
+        className="mb-10 text-center"
+        initial={{ opacity: 0, y: 16 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <p
+          style={{
+            color: "#c4b88a",
+            fontSize: "0.68rem",
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            fontFamily: "var(--font-bakso), cursive",
+          }}
+        >
+          ✦ a gentle map ✦
+        </p>
+        <h2
+          style={{
+            color: "#9e823c",
+            fontSize: "clamp(1.25rem, 4vw, 1.9rem)",
+            fontFamily: "var(--font-bakso), cursive",
+            marginTop: "0.4rem",
+            marginBottom: "0.3rem",
+            letterSpacing: "0.02em",
+          }}
+        >
+          four steps on the path
+        </h2>
+        <p
+          style={{
+            color: "#b8a060",
+            fontSize: "clamp(0.75rem, 2vw, 0.9rem)",
+            fontFamily: "var(--font-bakso), cursive",
+            letterSpacing: "0.04em",
+            opacity: 0.8,
+          }}
+        >
+          not rules, just a quiet direction
+        </p>
+      </motion.div>
+
+      {/* Map container — padding-bottom keeps the aspect ratio of the SVG viewBox */}
+      <div
+        className="relative w-full"
+        style={{ paddingBottom: `${(VBOX_H / VBOX_W) * 100}%` }}
+      >
+        {/* SVG decorative layer */}
+        <svg
+          viewBox={`0 0 ${VBOX_W} ${VBOX_H}`}
+          className="absolute inset-0 h-full w-full"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <linearGradient
+              id="jGrad"
+              x1="180"
+              y1="20"
+              x2="290"
+              y2="400"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop offset="0%" stopColor="#c4943d" stopOpacity="0.7" />
+              <stop offset="33%" stopColor="#4a9078" stopOpacity="0.75" />
+              <stop offset="66%" stopColor="#a05060" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="#6b8e3a" stopOpacity="0.75" />
+            </linearGradient>
+          </defs>
+
+          {/* Wide soft ghost path — gives a subtle road feel */}
+          <path
+            d={JOURNEY_D}
+            stroke="rgba(175,125,80,0.07)"
+            strokeWidth="38"
+            strokeLinecap="round"
+          />
+
+          {/* Dashed center line */}
+          <path
+            d={JOURNEY_D}
+            stroke="rgba(175,125,80,0.13)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeDasharray="6 10"
+          />
+
+          {/* Animated draw path */}
+          <path
+            d={JOURNEY_D}
+            stroke="url(#jGrad)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeDasharray={PATH_LEN}
+            strokeDashoffset={inView ? 0 : PATH_LEN}
+            style={{
+              transition: `stroke-dashoffset 2.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s`,
+            }}
+          />
+
+          {/* Start beacon */}
+          <circle
+            cx={180}
+            cy={20}
+            r={4}
+            fill="#c4b88a"
+            opacity={inView ? 0.7 : 0}
+            style={{ transition: "opacity 0.5s 0.2s" }}
+          />
+          <circle
+            cx={180}
+            cy={20}
+            r={9}
+            stroke="#c4b88a"
+            strokeWidth="1"
+            opacity={inView ? 0.25 : 0}
+            style={{ transition: "opacity 0.5s 0.2s" }}
+          />
+
+          {/* Nodes */}
+          {kindnessSteps.map((step, i) => (
+            <g key={i}>
+              {/* Glow halo */}
+              <circle
+                cx={step.node[0]}
+                cy={step.node[1]}
+                r={22}
+                fill={`${step.accent}18`}
+                opacity={inView ? 1 : 0}
+                style={{ transition: `opacity 0.5s ${0.55 + i * 0.45}s` }}
+              />
+              {/* Main circle */}
+              <circle
+                cx={step.node[0]}
+                cy={step.node[1]}
+                r={14}
+                fill="rgba(255,248,242,0.95)"
+                stroke={step.accent}
+                strokeWidth="1.5"
+                opacity={inView ? 1 : 0}
+                style={{ transition: `opacity 0.5s ${0.7 + i * 0.45}s` }}
+              />
+              {/* Step number */}
+              <text
+                x={step.node[0]}
+                y={step.node[1] + 4}
+                textAnchor="middle"
+                fill={step.accent}
+                fontSize="8.5"
+                fontFamily="var(--font-bakso), cursive"
+                opacity={inView ? 1 : 0}
+                style={{ transition: `opacity 0.4s ${0.95 + i * 0.45}s` }}
+              >
+                {step.num}
+              </text>
+              {/* Short dot-dash connector toward the card */}
+              <line
+                x1={step.side === "right" ? step.node[0] + 14 : step.node[0] - 14}
+                y1={step.node[1]}
+                x2={step.side === "right" ? step.node[0] + 30 : step.node[0] - 30}
+                y2={step.node[1]}
+                stroke={step.accent}
+                strokeWidth="1"
+                strokeDasharray="2 3"
+                strokeLinecap="round"
+                opacity={inView ? 0.65 : 0}
+                style={{ transition: `opacity 0.4s ${1.05 + i * 0.45}s` }}
+              />
+            </g>
+          ))}
+        </svg>
+
+        {/* HTML Cards — absolutely positioned alongside each node */}
+        {kindnessSteps.map((step, i) => {
+          const [nx, ny] = step.node;
+          const isRight = step.side === "right";
+          const leftPct = isRight
+            ? `${((nx + 34) / VBOX_W) * 100}%`
+            : `3%`;
+          const widthPct = isRight
+            ? `${((VBOX_W - nx - 42) / VBOX_W) * 100}%`
+            : `${((nx - 38 - VBOX_W * 0.03) / VBOX_W) * 100}%`;
+          const topPct = `${((ny - 28) / VBOX_H) * 100}%`;
+
+          return (
+            <motion.div
+              key={i}
+              className="absolute rounded-2xl"
+              style={{
+                left: leftPct,
+                top: topPct,
+                width: widthPct,
+                background: "rgba(255,248,242,0.9)",
+                border: `1px solid ${step.accent}38`,
+                padding:
+                  "clamp(0.4rem, 1vw, 0.65rem) clamp(0.5rem, 1.2vw, 0.8rem)",
+                boxShadow: `0 2px 12px ${step.accent}12`,
+              }}
+              initial={{ opacity: 0, x: isRight ? 16 : -16 }}
+              animate={inView ? { opacity: 1, x: 0 } : {}}
+              transition={{
+                delay: 1.1 + i * 0.45,
+                duration: 0.75,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
+              <p
+                style={{
+                  color: step.accent,
+                  fontSize: "clamp(0.58rem, 1.4vw, 0.78rem)",
+                  fontFamily: "var(--font-bakso), cursive",
+                  letterSpacing: "0.08em",
+                  marginBottom: "0.2em",
+                  lineHeight: 1.2,
+                }}
+              >
+                {step.title}
+              </p>
+              <p
+                style={{
+                  color: "#7a7060",
+                  fontSize: "clamp(0.52rem, 1.2vw, 0.68rem)",
+                  fontFamily: "var(--font-gamja), cursive",
+                  lineHeight: 1.55,
+                }}
+              >
+                {step.desc}
+              </p>
+            </motion.div>
+          );
+        })}
+      </div>
+    </section>
+  );
 }
