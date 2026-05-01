@@ -63,12 +63,33 @@ export default function AboutPage() {
     <div
       className="min-h-screen relative overflow-hidden"
       style={{
-        background: "#f8ffd8",
+        background: "#fff8f2",
         fontFamily: "var(--font-gamja), cursive",
       }}
     >
       {/* Animated Background Layers */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Grid texture to match landing page */}
+        <svg
+          width="100%"
+          height="100%"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute inset-0"
+          style={{ zIndex: 0 }}
+        >
+          <defs>
+            <pattern id="aboutSmallGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+              <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(175,125,80,0.065)" strokeWidth="0.5" />
+            </pattern>
+            <pattern id="aboutLargeGrid" width="150" height="150" patternUnits="userSpaceOnUse">
+              <rect width="150" height="150" fill="url(#aboutSmallGrid)" />
+              <path d="M 150 0 L 0 0 0 150" fill="none" stroke="rgba(175,125,80,0.15)" strokeWidth="0.8" />
+              <line x1="73" y1="75" x2="77" y2="75" stroke="rgba(175,125,80,0.3)" strokeWidth="0.7" />
+              <line x1="75" y1="73" x2="75" y2="77" stroke="rgba(175,125,80,0.3)" strokeWidth="0.7" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#aboutLargeGrid)" />
+        </svg>
         <motion.div
           className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full"
           style={{
@@ -267,7 +288,7 @@ export default function AboutPage() {
                 <span style={{ color: "#2d6a4f", fontWeight: 600 }}>
                   but at least someone will
                 </span>
-                —that would be my only{" "}
+                , and that someone finding their way back to gentleness is my only{" "}
                 <span style={{ color: "#9e823c", fontWeight: 700 }}>hope</span>.
               </p>
               <p
@@ -283,11 +304,11 @@ export default function AboutPage() {
                   uncomfortable
                 </span>{" "}
                 or overwhelmed. We, humans have all been on both sides of that
-                heavy feeling—sometimes we may be the ones feeling the{" "}
+                heavy feeling. Sometimes we are the ones feeling the{" "}
                 <span style={{ color: "#a94442", fontWeight: 600 }}>
                   unease
                 </span>
-                , sometimes we are the reason others feel it. This space exists
+                , and sometimes we are the reason others feel it. This space exists
                 to bridge that gap. Whether the{" "}
                 <span style={{ color: "#b89c3a", fontWeight: 600 }}>
                   discomfort

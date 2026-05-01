@@ -67,7 +67,7 @@ export default function DoorsPage() {
                 letterSpacing: "0.04em",
               }}
             >
-              Don't worry - they're all safe to click.
+              Don&apos;t worry - they&apos;re all safe to click.
             </span>
           </h1>
           <div className="flex w-full max-w-5xl flex-wrap items-end justify-center gap-x-2 gap-y-6 sm:gap-x-8 sm:gap-y-8 md:flex-nowrap md:gap-x-10 lg:gap-x-14">

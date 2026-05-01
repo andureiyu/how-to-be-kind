@@ -8,12 +8,33 @@ export default function CreatorPage() {
     <div
       className="min-h-screen relative overflow-hidden"
       style={{
-        background: "#f8ffd8",
+        background: "#fff8f2",
         fontFamily: "var(--font-gamja), cursive",
       }}
     >
       {/* Static Background Layers */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Grid texture to match landing page */}
+        <svg
+          width="100%"
+          height="100%"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute inset-0"
+          style={{ zIndex: 0 }}
+        >
+          <defs>
+            <pattern id="creatorSmallGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+              <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(175,125,80,0.065)" strokeWidth="0.5" />
+            </pattern>
+            <pattern id="creatorLargeGrid" width="150" height="150" patternUnits="userSpaceOnUse">
+              <rect width="150" height="150" fill="url(#creatorSmallGrid)" />
+              <path d="M 150 0 L 0 0 0 150" fill="none" stroke="rgba(175,125,80,0.15)" strokeWidth="0.8" />
+              <line x1="73" y1="75" x2="77" y2="75" stroke="rgba(175,125,80,0.3)" strokeWidth="0.7" />
+              <line x1="75" y1="73" x2="75" y2="77" stroke="rgba(175,125,80,0.3)" strokeWidth="0.7" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#creatorLargeGrid)" />
+        </svg>
         <div
           className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full"
           style={{
@@ -136,10 +157,16 @@ export default function CreatorPage() {
                 }}
               >
                 <p style={{ marginBottom: "1.25rem" }}>
-                  [Your custom description will go here. This is a placeholder text that you can replace with your own content describing yourself, your motivation, or any other information you would like to share.]
+                  Hey! I&apos;m Michael Andrei, the person behind this little corner of the internet.
+                  I built{" "}
+                  <span style={{ color: "#9e823c", fontWeight: 600 }}>How to Be Kind</span>{" "}
+                  because I genuinely believe that kindness matters, especially in the moments when it feels hardest to give or receive.
                 </p>
                 <p style={{ marginBottom: "1.25rem" }}>
-                  Feel free to update this section with your personalized message that reflects who you are and why you created this space.
+                  This site is my small, sincere attempt at creating something{" "}
+                  <span style={{ color: "#2d6a4f", fontWeight: 600 }}>gentle</span>{" "}
+                  in a world that can sometimes feel overwhelming. I hope that whenever you find yourself here, you leave feeling just a little bit{" "}
+                  <span style={{ color: "#b89c3a", fontWeight: 600 }}>lighter</span>.
                 </p>
               </div>
 

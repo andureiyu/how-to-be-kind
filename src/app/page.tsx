@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import type { Variants } from "framer-motion";
 import { HiAtSymbol } from "react-icons/hi";
 import LoadingScreen from "./components/LoadingScreen";
 
@@ -16,14 +17,13 @@ const phrases = [
   { text: "Wie man freundlich ist", lang: "Deutsch" },
 ];
 
-/* Character-stagger spring variants — inspired by GSAP SplitText + Framer Motion community */
-const sentenceVariants = {
+const sentenceVariants: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.038, delayChildren: 0.05 } },
   exit: { transition: { staggerChildren: 0.018, staggerDirection: -1 } },
 };
 
-const charVariants = {
+const charVariants: Variants = {
   hidden: { opacity: 0, y: 48, rotateX: -90, scale: 0.85 },
   visible: {
     opacity: 1,
@@ -47,7 +47,6 @@ export default function Home() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const router = useRouter();
 
-  // Start cycling exactly when the loading screen finishes — stable [] dep, no HMR size mismatch
   const handleDone = useCallback(() => {
     setLoaded(true);
     intervalRef.current = setInterval(() => {
@@ -74,8 +73,7 @@ export default function Home() {
         <BackgroundTexture />
         <NavMenu />
 
-        <div className="relative z-10 flex flex-col items-center justify-center gap-5 px-4 sm:px-6 py-8 w-full">
-          {/* Cycling multilingual title — per-character stagger spring */}
+        <div className="relative z-10 flex w-full flex-col items-center justify-center gap-5 px-4 py-8 sm:px-6">
           <div
             className="relative flex items-center justify-center"
             style={{
@@ -110,7 +108,7 @@ export default function Home() {
                   <span key={wi} style={{ display: "inline-flex", overflow: "hidden" }}>
                     {word.split("").map((char, ci) => (
                       <motion.span
-                        key={ci}
+                        key={`${wi}-${ci}`}
                         variants={charVariants}
                         style={{ display: "inline-block", transformOrigin: "bottom center" }}
                       >
@@ -123,7 +121,6 @@ export default function Home() {
             </AnimatePresence>
           </div>
 
-          {/* Language label */}
           <div style={{ height: "1.4rem", overflow: "hidden" }}>
             <AnimatePresence mode="wait">
               <motion.span
@@ -147,7 +144,6 @@ export default function Home() {
             </AnimatePresence>
           </div>
 
-          {/* Tagline */}
           <motion.p
             style={{
               color: "#9e6b3a",
@@ -166,7 +162,6 @@ export default function Home() {
             ~ a gentle space for you guys ~
           </motion.p>
 
-          {/* CTA Button */}
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -188,8 +183,6 @@ export default function Home() {
   );
 }
 
-/* ───────────────────────────── Start Button ───────────────────────────── */
-
 function StartButton({ onClick, pressed }: { onClick: () => void; pressed: boolean }) {
   return (
     <motion.button
@@ -209,13 +202,12 @@ function StartButton({ onClick, pressed }: { onClick: () => void; pressed: boole
       whileTap="tap"
       animate={pressed ? "tap" : "idle"}
     >
-      {/* Offset shadow layer */}
       <motion.span
         aria-hidden
         variants={{
-          idle:  { x: 5, y: 5 },
+          idle: { x: 5, y: 5 },
           hover: { x: 7, y: 7 },
-          tap:   { x: 2, y: 2 },
+          tap: { x: 2, y: 2 },
         }}
         transition={{ type: "spring", stiffness: 500, damping: 22 }}
         style={{
@@ -226,12 +218,11 @@ function StartButton({ onClick, pressed }: { onClick: () => void; pressed: boole
           display: "block",
         }}
       />
-      {/* Main face */}
       <motion.span
         variants={{
-          idle:  { x: 0, y: 0 },
+          idle: { x: 0, y: 0 },
           hover: { x: -2, y: -2 },
-          tap:   { x: 3, y: 3 },
+          tap: { x: 3, y: 3 },
         }}
         transition={{ type: "spring", stiffness: 500, damping: 22 }}
         style={{
@@ -256,15 +247,9 @@ function StartButton({ onClick, pressed }: { onClick: () => void; pressed: boole
   );
 }
 
-/* ──────────────────────────── Background Texture ──────────────────────────── */
-
 function BackgroundTexture() {
   return (
-    <div
-      className="absolute inset-0 pointer-events-none overflow-hidden"
-      style={{ zIndex: 0 }}
-    >
-      {/* Fine grid + large grid with cross accents */}
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
       <svg
         width="100%"
         height="100%"
@@ -288,7 +273,6 @@ function BackgroundTexture() {
               stroke="rgba(175,125,80,0.15)"
               strokeWidth="0.8"
             />
-            {/* Small cross at major grid intersections */}
             <line x1="73" y1="75" x2="77" y2="75" stroke="rgba(175,125,80,0.3)" strokeWidth="0.7" />
             <line x1="75" y1="73" x2="75" y2="77" stroke="rgba(175,125,80,0.3)" strokeWidth="0.7" />
           </pattern>
@@ -296,84 +280,84 @@ function BackgroundTexture() {
         <rect width="100%" height="100%" fill="url(#largeGrid)" />
       </svg>
 
-      {/* Abstract vector decor — top-left */}
-      <svg
-        className="absolute top-0 left-0"
-        width="300"
-        height="300"
-        viewBox="0 0 300 300"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ opacity: 0.075 }}
-      >
-        <path d="M -10 100 Q 55 35 120 100 Q 185 165 250 100" stroke="#9e6b3a" strokeWidth="1.5" />
-        <path d="M 35 0 L 35 160" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="4 10" />
-        <path d="M 0 55 L 200 55" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="4 10" />
-        <rect x="65" y="95" width="72" height="72" stroke="#9e6b3a" strokeWidth="1" strokeDasharray="6 10" transform="rotate(13 101 131)" />
-        <circle cx="10" cy="10" r="30" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="3 9" />
-      </svg>
-
-      {/* Abstract vector decor — bottom-right (mirrored) */}
-      <svg
-        className="absolute bottom-0 right-0"
-        width="300"
-        height="300"
-        viewBox="0 0 300 300"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ opacity: 0.075, transform: "rotate(180deg)" }}
-      >
-        <path d="M -10 100 Q 55 35 120 100 Q 185 165 250 100" stroke="#9e6b3a" strokeWidth="1.5" />
-        <path d="M 35 0 L 35 160" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="4 10" />
-        <path d="M 0 55 L 200 55" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="4 10" />
-        <rect x="65" y="95" width="72" height="72" stroke="#9e6b3a" strokeWidth="1" strokeDasharray="6 10" transform="rotate(13 101 131)" />
-        <circle cx="10" cy="10" r="30" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="3 9" />
-      </svg>
-
-      {/* Subtle arc — top-right */}
-      <svg
-        className="absolute top-0 right-0"
-        width="220"
-        height="220"
-        viewBox="0 0 220 220"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ opacity: 0.055 }}
-      >
-        <circle cx="200" cy="30" r="90" stroke="#9e6b3a" strokeWidth="1" strokeDasharray="3 13" />
-        <path d="M 120 0 L 220 100" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="5 9" />
-      </svg>
-
-      {/* Subtle arc — bottom-left */}
-      <svg
-        className="absolute bottom-0 left-0"
-        width="220"
-        height="220"
-        viewBox="0 0 220 220"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ opacity: 0.055 }}
-      >
-        <circle cx="20" cy="190" r="90" stroke="#9e6b3a" strokeWidth="1" strokeDasharray="3 13" />
-        <path d="M 0 120 L 100 220" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="5 9" />
-      </svg>
+      <DecorativeCorner className="absolute left-0 top-0" />
+      <DecorativeCorner className="absolute bottom-0 right-0 rotate-180" />
+      <DecorativeArc className="absolute right-0 top-0" align="top-right" />
+      <DecorativeArc className="absolute bottom-0 left-0" align="bottom-left" />
     </div>
   );
 }
 
-/* ──────────────────────────── Nav Menu ──────────────────────────── */
+function DecorativeCorner({ className }: { className: string }) {
+  return (
+    <svg
+      className={className}
+      width="300"
+      height="300"
+      viewBox="0 0 300 300"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ opacity: 0.075 }}
+    >
+      <path d="M -10 100 Q 55 35 120 100 Q 185 165 250 100" stroke="#9e6b3a" strokeWidth="1.5" />
+      <path d="M 35 0 L 35 160" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="4 10" />
+      <path d="M 0 55 L 200 55" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="4 10" />
+      <rect
+        x="65"
+        y="95"
+        width="72"
+        height="72"
+        stroke="#9e6b3a"
+        strokeWidth="1"
+        strokeDasharray="6 10"
+        transform="rotate(13 101 131)"
+      />
+      <circle cx="10" cy="10" r="30" stroke="#9e6b3a" strokeWidth="0.8" strokeDasharray="3 9" />
+    </svg>
+  );
+}
+
+function DecorativeArc({ className, align }: { className: string; align: "top-right" | "bottom-left" }) {
+  const isTopRight = align === "top-right";
+
+  return (
+    <svg
+      className={className}
+      width="220"
+      height="220"
+      viewBox="0 0 220 220"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ opacity: 0.055 }}
+    >
+      <circle
+        cx={isTopRight ? "200" : "20"}
+        cy={isTopRight ? "30" : "190"}
+        r="90"
+        stroke="#9e6b3a"
+        strokeWidth="1"
+        strokeDasharray="3 13"
+      />
+      <path
+        d={isTopRight ? "M 120 0 L 220 100" : "M 0 120 L 100 220"}
+        stroke="#9e6b3a"
+        strokeWidth="0.8"
+        strokeDasharray="5 9"
+      />
+    </svg>
+  );
+}
 
 function NavMenu() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <motion.div
-      className="absolute top-5 left-0 right-0 z-50 flex flex-col items-center sm:top-7"
+      className="absolute left-0 right-0 top-5 z-50 flex flex-col items-center sm:top-7"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
     >
-      {/* Toggle */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
         className="relative cursor-pointer border-none bg-transparent outline-none"
@@ -391,7 +375,6 @@ function NavMenu() {
         <HiAtSymbol />
       </motion.button>
 
-      {/* Nav links */}
       <AnimatePresence>
         {isOpen && (
           <motion.nav
@@ -401,25 +384,10 @@ function NavMenu() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
-            <motion.a
-              href="/about"
-              className="relative whitespace-nowrap px-3 py-1"
-              style={{
-                color: "#9e823c",
-                fontSize: "clamp(0.95rem, 2.2vw, 1.1rem)",
-                fontFamily: "var(--font-bakso), cursive",
-                letterSpacing: "0.06em",
-              }}
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 12 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              whileHover={{ color: "#6b8e3a", transition: { duration: 0.2 } }}
-            >
+            <NavLink href="/about" direction="right">
               about
-            </motion.a>
+            </NavLink>
 
-            {/* Separator */}
             <motion.span
               style={{ color: "#c4b06d", fontSize: "0.5rem", opacity: 0.6 }}
               initial={{ opacity: 0, scale: 0 }}
@@ -430,26 +398,44 @@ function NavMenu() {
               ●
             </motion.span>
 
-            <motion.a
-              href="/creator"
-              className="relative whitespace-nowrap px-3 py-1"
-              style={{
-                color: "#9e823c",
-                fontSize: "clamp(0.95rem, 2.2vw, 1.1rem)",
-                fontFamily: "var(--font-bakso), cursive",
-                letterSpacing: "0.06em",
-              }}
-              initial={{ opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -12 }}
-              transition={{ duration: 0.3, ease: "easeOut", delay: 0.05 }}
-              whileHover={{ color: "#6b8e3a", transition: { duration: 0.2 } }}
-            >
+            <NavLink href="/creator" direction="left">
               sino gumawa nito?
-            </motion.a>
+            </NavLink>
           </motion.nav>
         )}
       </AnimatePresence>
     </motion.div>
+  );
+}
+
+function NavLink({
+  href,
+  direction,
+  children,
+}: {
+  href: string;
+  direction: "left" | "right";
+  children: React.ReactNode;
+}) {
+  const x = direction === "right" ? 12 : -12;
+
+  return (
+    <motion.a
+      href={href}
+      className="relative whitespace-nowrap px-3 py-1"
+      style={{
+        color: "#9e823c",
+        fontSize: "clamp(0.95rem, 2.2vw, 1.1rem)",
+        fontFamily: "var(--font-bakso), cursive",
+        letterSpacing: "0.06em",
+      }}
+      initial={{ opacity: 0, x }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x }}
+      transition={{ duration: 0.3, ease: "easeOut", delay: direction === "left" ? 0.05 : 0 }}
+      whileHover={{ color: "#6b8e3a", transition: { duration: 0.2 } }}
+    >
+      {children}
+    </motion.a>
   );
 }
