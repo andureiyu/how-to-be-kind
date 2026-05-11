@@ -64,3 +64,29 @@ body {
     opacity 0.35s ease,
     transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
+
+/* ─── Smooth scroll ─── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ─── Scenario / wall page scrollbar ─── */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(158, 107, 58, 0.25);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(158, 107, 58, 0.42);
+}
+
+/* ─── Textarea focus ring ─── */
+textarea:focus {
+  border-color: rgba(196, 148, 61, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(196, 148, 61, 0.1) !important;
+}
