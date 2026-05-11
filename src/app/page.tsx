@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion";
+import { HiAtSymbol } from "react-icons/hi";
 import LoadingScreen from "./components/LoadingScreen";
 
 const phrases = [
@@ -70,6 +71,7 @@ export default function Home() {
         }}
       >
         <BackgroundTexture />
+        <NavMenu />
 
         <div className="relative z-10 flex w-full flex-col items-center justify-center gap-5 px-4 py-8 sm:px-6">
           <div
@@ -343,5 +345,97 @@ function DecorativeArc({ className, align }: { className: string; align: "top-ri
         strokeDasharray="5 9"
       />
     </svg>
+  );
+}
+
+function NavMenu() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <motion.div
+      className="absolute left-0 right-0 top-5 z-50 flex flex-col items-center sm:top-7"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+    >
+      <motion.button
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative cursor-pointer border-none bg-transparent outline-none"
+        style={{
+          color: "#c4b06d",
+          fontSize: "clamp(1.2rem, 3vw, 1.6rem)",
+          lineHeight: 1,
+          padding: "6px 10px",
+        }}
+        aria-label={isOpen ? "Close navigation" : "Open navigation"}
+        animate={isOpen ? { rotate: 72 } : {}}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        whileHover={{ scale: 1.25, rotate: 45, transition: { duration: 0.3 } }}
+      >
+        <HiAtSymbol />
+      </motion.button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.nav
+            className="mt-1 flex items-center justify-center gap-3 sm:gap-5"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+          >
+            <NavLink href="/about" direction="right">
+              about
+            </NavLink>
+
+            <motion.span
+              style={{ color: "#c4b06d", fontSize: "0.5rem", opacity: 0.6 }}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 0.6, scale: 1 }}
+              exit={{ opacity: 0, scale: 0 }}
+              transition={{ duration: 0.2, delay: 0.1 }}
+            >
+              ●
+            </motion.span>
+
+            <NavLink href="/creator" direction="left">
+              sino gumawa nito?
+            </NavLink>
+          </motion.nav>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+function NavLink({
+  href,
+  direction,
+  children,
+}: {
+  href: string;
+  direction: "left" | "right";
+  children: React.ReactNode;
+}) {
+  const x = direction === "right" ? 12 : -12;
+
+  return (
+    <motion.a
+      href={href}
+      className="relative whitespace-nowrap px-3 py-1"
+      style={{
+        color: "#9e823c",
+        fontSize: "clamp(0.95rem, 2.2vw, 1.1rem)",
+        fontFamily: "var(--font-bakso), cursive",
+        letterSpacing: "0.06em",
+      }}
+      initial={{ opacity: 0, x }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x }}
+      transition={{ duration: 0.3, ease: "easeOut", delay: direction === "left" ? 0.05 : 0 }}
+      whileHover={{ color: "#6b8e3a", transition: { duration: 0.2 } }}
+    >
+      {children}
+    </motion.a>
   );
 }
